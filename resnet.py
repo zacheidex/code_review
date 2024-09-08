@@ -117,8 +117,6 @@ if __name__ == "__main__":
 
     # Use the weights in the loss function
     criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([weight_for_class_1]).to(device))
-
-    criterion = nn.BCELoss()
     optimizer_G = torch.optim.AdamW(model.parameters(), lr=0.0001, betas=(0.5, 0.999), eps=1e-6)
 
     train_losses = []
