@@ -9,6 +9,9 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision import models
 from PIL import Image
 import pandas as pd
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 ################################################################################################################################################################
@@ -68,7 +71,7 @@ class PNGDataset(Dataset):
             clinical_vector = patient_data['WHO CNS Grade'].values[0]  # Extract the WHO CNS Grade
             clinical_vector = 1 if clinical_vector > 2 else 0
         else:
-            print(f"Warning: {patient_id} not found in clinical data.")
+            logger.warning(f"Warning: {patient_id} not found in clinical data.")
 
         clinical_tensor = torch.FloatTensor([clinical_vector])
         return input_img, clinical_tensor, file_name
@@ -163,7 +166,7 @@ if __name__ == "__main__":
         epoch_end_time = time.time()
         epoch_time = (epoch_end_time - epoch_start_time) / 60
 
-        print(f'Epoch [{epoch + 1}/{num_epochs}], Train Loss: {avg_train_loss:.4f}, Time: {epoch_time:.2f} min')
+        logger.info(f'Epoch [{epoch + 1}/{num_epochs}], Train Loss: {avg_train_loss:.4f}, Time: {epoch_time:.2f} min')
 
         if (epoch + 1) % val_step == 0:
             model.eval()
@@ -201,11 +204,11 @@ if __name__ == "__main__":
                 }
                 writer.writerow(row)
 
-            print(f'Validation Loss: {avg_val_loss:.4f}')
+            logger.info(f'Validation Loss: {avg_val_loss:.4f}')
 
             if avg_val_loss < best_val_loss:
                 best_val_loss = avg_val_loss
                 torch.save(model.state_dict(), f"./results/{output_folder}/best_model.pth")
-                print(f"Model saved at epoch {epoch + 1} with validation loss {avg_val_loss:.4f}")
+                logger.info(f"Model saved at epoch {epoch + 1} with validation loss {avg_val_loss:.4f}")
 
             model.train()
